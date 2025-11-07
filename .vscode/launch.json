@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-BitacoraApplication<bitacora>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.bitacora.bitacora.BitacoraApplication",
+            "projectName": "bitacora",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
