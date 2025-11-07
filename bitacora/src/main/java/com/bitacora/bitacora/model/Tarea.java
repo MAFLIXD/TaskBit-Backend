@@ -1,5 +1,6 @@
 package com.bitacora.bitacora.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.Duration;
@@ -15,15 +16,16 @@ public class Tarea {
     private String titulo;
     private String descripcion;
     private String estado; // Pendiente, En progreso, Completada
-    private String proyecto; // Nombre del proyecto o categoría
-
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
     private Double duracionHoras; // Calculada automáticamente
-
     private String observaciones;
-
     private LocalDateTime fechaCreacion = LocalDateTime.now();
+
+    @ManyToOne
+    @JoinColumn(name = "proyecto_id")
+    @JsonBackReference // 👈 Evita el bucle infinito al serializar (Proyecto → Tarea → Proyecto)
+    private Proyecto proyecto;
 
     // ====== Getters y Setters ======
     public Long getId() { return id; }
@@ -37,9 +39,6 @@ public class Tarea {
 
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
-
-    public String getProyecto() { return proyecto; }
-    public void setProyecto(String proyecto) { this.proyecto = proyecto; }
 
     public LocalDateTime getFechaInicio() { return fechaInicio; }
     public void setFechaInicio(LocalDateTime fechaInicio) { this.fechaInicio = fechaInicio; }
@@ -55,6 +54,9 @@ public class Tarea {
 
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+
+    public Proyecto getProyecto() { return proyecto; }
+    public void setProyecto(Proyecto proyecto) { this.proyecto = proyecto; }
 
     // ====== Método auxiliar ======
     @PrePersist
