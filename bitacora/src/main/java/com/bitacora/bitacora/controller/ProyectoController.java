@@ -38,29 +38,31 @@ public class ProyectoController {
 
     // ====== PUT: actualizar un proyecto existente ======
     @PutMapping("/{id}")
-public Proyecto actualizarProyecto(@PathVariable Long id, @RequestBody Proyecto proyecto) {
-    Optional<Proyecto> proyectoExistente = proyectoService.obtenerPorId(id);
+    public Proyecto actualizarProyecto(@PathVariable Long id, @RequestBody Proyecto proyecto) {
+        Optional<Proyecto> proyectoExistente = proyectoService.obtenerPorId(id);
 
-    if (proyectoExistente.isPresent()) {
-        Proyecto p = proyectoExistente.get();
-        p.setNombre(proyecto.getNombre());
-        p.setDescripcion(proyecto.getDescripcion());
-        p.setFechaInicio(proyecto.getFechaInicio());
-        p.setFechaFin(proyecto.getFechaFin());
+        if (proyectoExistente.isPresent()) {
+            Proyecto p = proyectoExistente.get();
+            p.setNombre(proyecto.getNombre());
+            p.setDescripcion(proyecto.getDescripcion());
+            p.setFechaInicio(proyecto.getFechaInicio());
+            p.setFechaFin(proyecto.getFechaFin());
+            p.setTareas(proyecto.getTareas()); // 🔹 importante para recalcular duración
 
-        // 🔹 Calcula la duración antes de guardar
-        if (p.getFechaInicio() != null && p.getFechaFin() != null) {
-            long minutos = Duration.between(p.getFechaInicio(), p.getFechaFin()).toMinutes();
-            p.setDuracionHoras(minutos / 60.0);
+            // 🔹 Si no hay tareas, calcula duración con fechas
+            if ((p.getTareas() == null || p.getTareas().isEmpty()) 
+                    && p.getFechaInicio() != null && p.getFechaFin() != null) {
+
+                long minutos = Duration.between(p.getFechaInicio(), p.getFechaFin()).toMinutes();
+                p.setDuracionHoras(minutos / 60.0);
+            }
+
+            // 🔹 Delega el guardado y cálculo a ProyectoService
+            return proyectoService.guardar(p);
         } else {
-            p.setDuracionHoras(null);
+            throw new RuntimeException("Proyecto no encontrado con ID: " + id);
         }
-
-        return proyectoService.guardar(p);
-    } else {
-        throw new RuntimeException("Proyecto no encontrado con ID: " + id);
     }
-}
 
     // ====== DELETE: eliminar un proyecto por ID ======
     @DeleteMapping("/{id}")

@@ -1,4 +1,5 @@
 package com.bitacora.bitacora.service;
+
 import com.bitacora.bitacora.model.Proyecto;
 import com.bitacora.bitacora.model.Tarea;
 import com.bitacora.bitacora.repository.ProyectoRepository;
@@ -23,23 +24,37 @@ public class ProyectoService {
         return proyectoRepository.findById(id);
     }
 
-    // 🔹 Guarda el proyecto calculando la duración total en base a sus tareas
+    // 🔹 Guarda el proyecto calculando la duración total automáticamente
     public Proyecto guardar(Proyecto proyecto) {
-        if (proyecto.getTareas() != null && !proyecto.getTareas().isEmpty()) {
-            double totalHoras = 0.0;
-            for (Tarea tarea : proyecto.getTareas()) {
-                if (tarea.getDuracionHoras() != null) {
-                    totalHoras += tarea.getDuracionHoras();
-                }
-                // asegura la relación bidireccional
-                tarea.setProyecto(proyecto);
-            }
-            proyecto.setDuracionHoras(totalHoras);
-        }
+        recalcularDuracion(proyecto);
         return proyectoRepository.save(proyecto);
     }
 
     public void eliminar(Long id) {
         proyectoRepository.deleteById(id);
+    }
+
+    // ======================= MÉTODO AUXILIAR ==========================
+    /**
+     * Recalcula la duración total del proyecto.
+     * Si tiene tareas asociadas, suma las horas de todas.
+     * Si tiene fechas de inicio y fin, usa esas fechas.
+     */
+    private void recalcularDuracion(Proyecto proyecto) {
+        double totalHoras = 0.0;
+
+        if (proyecto.getTareas() != null && !proyecto.getTareas().isEmpty()) {
+            for (Tarea tarea : proyecto.getTareas()) {
+                // Aseguramos la relación bidireccional
+                tarea.setProyecto(proyecto);
+
+                if (tarea.getDuracionHoras() != null) {
+                    totalHoras += tarea.getDuracionHoras();
+                }
+            }
+        }
+
+        // Si no hay tareas, dejamos la duración en null (no en 0)
+        proyecto.setDuracionHoras(totalHoras > 0 ? totalHoras : null);
     }
 }
