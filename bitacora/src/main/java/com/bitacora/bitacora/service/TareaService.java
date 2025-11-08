@@ -50,7 +50,28 @@ public class TareaService {
         return nuevaTarea;
     }
 
-    public void eliminar(Long id) {
-        tareaRepository.deleteById(id);
+    @Transactional
+public void eliminar(Long id) {
+    Tarea tarea = tareaRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Tarea no encontrada"));
+
+    Proyecto proyecto = tarea.getProyecto();
+
+    // 🔹 Primero, desvincula la tarea del proyecto antes de eliminarla
+    if (proyecto != null) {
+        proyecto.getTareas().remove(tarea);
+
+        // 🔹 Recalcula las horas totales del proyecto
+        double totalHoras = proyecto.getTareas().stream()
+                .filter(t -> t.getDuracionHoras() != null)
+                .mapToDouble(Tarea::getDuracionHoras)
+                .sum();
+
+        proyecto.setDuracionHoras(totalHoras);
+        proyectoRepository.save(proyecto);
+    }
+
+    // 🔹 Luego elimina la tarea
+    tareaRepository.delete(tarea);
     }
 }
