@@ -1,5 +1,21 @@
 package com.bitacora.bitacora.controller;
 
+import com.bitacora.bitacora.service.ChatService;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/chat")
+@CrossOrigin(origins = "*")
 public class ChatController {
-    
+
+    private final ChatService chatService;
+
+    public ChatController(ChatService chatService) {
+        this.chatService = chatService;
+    }
+
+    @PostMapping
+    public String procesarMensaje(@RequestBody String mensaje) {
+        return chatService.procesarMensaje(mensaje);
+    }
 }
