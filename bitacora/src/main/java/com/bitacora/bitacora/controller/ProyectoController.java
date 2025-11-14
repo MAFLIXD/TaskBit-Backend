@@ -39,25 +39,26 @@ public class ProyectoController {
     // ====== PUT: actualizar un proyecto existente ======
     @PutMapping("/{id}")
     public Proyecto actualizarProyecto(@PathVariable Long id, @RequestBody Proyecto proyecto) {
-        Optional<Proyecto> proyectoExistente = proyectoService.obtenerPorId(id);
+        Optional<Proyecto> proyectoExistenteOpt = proyectoService.obtenerPorId(id);
 
-        if (proyectoExistente.isPresent()) {
-            Proyecto p = proyectoExistente.get();
-            p.setNombre(proyecto.getNombre());
-            p.setDescripcion(proyecto.getDescripcion());
-            p.setFechaInicio(proyecto.getFechaInicio());
-            p.setFechaFin(proyecto.getFechaFin());
-            p.setTareas(proyecto.getTareas()); // 🔹 importante para recalcular duración
+        if (proyectoExistenteOpt.isPresent()) {
+            Proyecto p = proyectoExistenteOpt.get();
 
-            // 🔹 Si no hay tareas, calcula duración con fechas
-            if ((p.getTareas() == null || p.getTareas().isEmpty()) 
-                    && p.getFechaInicio() != null && p.getFechaFin() != null) {
+            // 🔹 Solo actualizamos los campos básicos, sin tocar la lista de tareas
+            if (proyecto.getNombre() != null) p.setNombre(proyecto.getNombre());
+            if (proyecto.getDescripcion() != null) p.setDescripcion(proyecto.getDescripcion());
+            if (proyecto.getFechaInicio() != null) p.setFechaInicio(proyecto.getFechaInicio());
+            if (proyecto.getFechaFin() != null) p.setFechaFin(proyecto.getFechaFin());
 
+            // 🔹 Si el frontend quiere modificar las tareas, eso debe ir por otro endpoint (por ejemplo: /proyectos/{id}/tareas)
+            // 🔹 Aquí evitamos llamar p.setTareas(...)
+
+            // 🔹 Recalcular duración si tiene fechas válidas
+            if (p.getFechaInicio() != null && p.getFechaFin() != null) {
                 long minutos = Duration.between(p.getFechaInicio(), p.getFechaFin()).toMinutes();
                 p.setDuracionHoras(minutos / 60.0);
             }
 
-            // 🔹 Delega el guardado y cálculo a ProyectoService
             return proyectoService.guardar(p);
         } else {
             throw new RuntimeException("Proyecto no encontrado con ID: " + id);
