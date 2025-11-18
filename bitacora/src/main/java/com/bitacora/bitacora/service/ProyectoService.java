@@ -24,7 +24,7 @@ public class ProyectoService {
         return proyectoRepository.findById(id);
     }
 
-    // 🔹 Guarda el proyecto calculando la duración total automáticamente
+    //Guarda el proyecto calculando la duración total automáticamente
     public Proyecto guardar(Proyecto proyecto) {
         recalcularDuracion(proyecto);
         return proyectoRepository.save(proyecto);
@@ -34,12 +34,12 @@ public class ProyectoService {
         proyectoRepository.deleteById(id);
     }
 
-    // ======================= MÉTODO AUXILIAR ==========================
     /**
-     * Recalcula la duración total del proyecto.
-     * Si tiene tareas asociadas, suma las horas de todas.
-     * Si tiene fechas de inicio y fin, usa esas fechas.
+     - Recalcula la duración total del proyecto.
+     - Si tiene tareas asociadas, suma las horas de todas.
+     - Si tiene fechas de inicio y fin, usa esas fechas.
      */
+
     private void recalcularDuracion(Proyecto proyecto) {
         double totalHoras = 0.0;
 
@@ -54,7 +54,7 @@ public class ProyectoService {
             }
         }
 
-        // Si no hay tareas, dejamos la duración en null (no en 0)
+        //Si no hay tareas, dejamos la duración en null (no en 0)
         proyecto.setDuracionHoras(totalHoras > 0 ? totalHoras : null);
     }
 }

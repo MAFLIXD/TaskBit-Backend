@@ -1,12 +1,10 @@
 package com.bitacora.bitacora.service;
-
 import com.bitacora.bitacora.model.Proyecto;
 import com.bitacora.bitacora.model.Tarea;
 import com.bitacora.bitacora.repository.ProyectoRepository;
 import com.bitacora.bitacora.repository.TareaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +31,7 @@ public class TareaService {
     public Tarea guardar(Tarea tarea) {
         Tarea nuevaTarea = tareaRepository.save(tarea);
 
-        // 🔹 Si la tarea está asociada a un proyecto, recalcula su duración total
+        //Si la tarea está asociada a un proyecto, recalcula su duración total
         if (tarea.getProyecto() != null && tarea.getProyecto().getId() != null) {
             Proyecto proyecto = proyectoRepository.findById(tarea.getProyecto().getId())
                     .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
@@ -57,11 +55,11 @@ public void eliminar(Long id) {
 
     Proyecto proyecto = tarea.getProyecto();
 
-    // 🔹 Primero, desvincula la tarea del proyecto antes de eliminarla
+    //Desvincula la tarea del proyecto antes de eliminarla
     if (proyecto != null) {
         proyecto.getTareas().remove(tarea);
 
-        // 🔹 Recalcula las horas totales del proyecto
+        //Recalcula las horas totales del proyecto
         double totalHoras = proyecto.getTareas().stream()
                 .filter(t -> t.getDuracionHoras() != null)
                 .mapToDouble(Tarea::getDuracionHoras)
@@ -71,7 +69,7 @@ public void eliminar(Long id) {
         proyectoRepository.save(proyecto);
     }
 
-    // 🔹 Luego elimina la tarea
+    //Luego elimina la tarea
     tareaRepository.delete(tarea);
     }
 }

@@ -1,5 +1,4 @@
 package com.bitacora.bitacora.service;
-
 import com.bitacora.bitacora.model.Proyecto;
 import com.bitacora.bitacora.model.Tarea;
 import com.bitacora.bitacora.repository.ProyectoRepository;
@@ -10,7 +9,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -138,12 +136,12 @@ Tu trabajo es interpretar instrucciones en lenguaje natural y devolver un objeto
             String nombre = (String) jsonMap.get("nombre");
             String titulo = (String) jsonMap.get("titulo");
 
-            // ================== CREAR ==================
+            //CREAR
             if ("crear".equalsIgnoreCase(accion)) {
                 if ("proyecto".equalsIgnoreCase(tipo)) {
                     Proyecto proyecto = objectMapper.convertValue(jsonMap.get("proyecto"), Proyecto.class);
                     
-                    // 🔹 VALIDAR NOMBRE DUPLICADO EN CREACIÓN DE PROYECTO
+                    //VALIDAR NOMBRE DUPLICADO EN CREACIÓN DE PROYECTO
                     if (proyecto.getNombre() == null || proyecto.getNombre().trim().isEmpty()) {
                         return "⚠️ El nombre del proyecto es requerido";
                     }
@@ -162,16 +160,16 @@ Tu trabajo es interpretar instrucciones en lenguaje natural y devolver un objeto
                 } else if ("tarea".equalsIgnoreCase(tipo)) {
                     Tarea tarea = objectMapper.convertValue(jsonMap.get("tarea"), Tarea.class);
                     
-                    // 🔹 VALIDAR TÍTULO DUPLICADO EN CREACIÓN DE TAREA
+                    //VALIDAR TÍTULO DUPLICADO EN CREACIÓN DE TAREA
                     if (tarea.getTitulo() == null || tarea.getTitulo().trim().isEmpty()) {
                         return "⚠️ El título de la tarea es requerido";
                     }
                     
-                    // Verificar si ya existe una tarea con el mismo título
+                    //Verificar si ya existe una tarea con el mismo título
                     boolean tareaExiste = tareaService.obtenerTodas().stream()
                             .anyMatch(t -> t.getTitulo() != null && 
                                     t.getTitulo().equalsIgnoreCase(tarea.getTitulo()) &&
-                                    // Si ambas tareas tienen proyecto, verificar que sean diferentes
+                                    //Si ambas tareas tienen proyecto, verificar que sean diferentes
                                     (t.getProyecto() == null ? tarea.getProyecto() == null : 
                                      tarea.getProyecto() != null && 
                                      t.getProyecto().getId().equals(tarea.getProyecto().getId())));
@@ -190,7 +188,7 @@ Tu trabajo es interpretar instrucciones en lenguaje natural y devolver un objeto
                 }
             }
 
-            // ================== ACTUALIZAR ==================
+            //ACTUALIZAR 
             if ("actualizar".equalsIgnoreCase(accion)) {
                 if ("proyecto".equalsIgnoreCase(tipo)) {
                     if (nombre == null || nombre.isEmpty()) return "⚠️ Nombre del proyecto es requerido para actualizar";
@@ -203,7 +201,7 @@ Tu trabajo es interpretar instrucciones en lenguaje natural y devolver un objeto
                     Proyecto p = optProyecto.get();
                     Proyecto datos = objectMapper.convertValue(jsonMap.get("proyecto"), Proyecto.class);
                     
-                    // 🔹 VALIDAR NOMBRE DUPLICADO EN ACTUALIZACIÓN DE PROYECTO
+                    //VALIDAR NOMBRE DUPLICADO EN ACTUALIZACIÓN DE PROYECTO
                     if (datos.getNombre() != null && !datos.getNombre().equalsIgnoreCase(p.getNombre())) {
                         boolean nombreExiste = proyectoRepository.findAll().stream()
                                 .anyMatch(proj -> proj.getNombre() != null && 
@@ -222,7 +220,7 @@ Tu trabajo es interpretar instrucciones en lenguaje natural y devolver un objeto
                     return "✅ Proyecto actualizado: " + p.getNombre();
                     
                 } else if ("tarea".equalsIgnoreCase(tipo)) {
-                    // 🔹 USAR "nombre" EN LUGAR DE "titulo" PARA CONSISTENCIA
+                    //USAR "nombre" EN LUGAR DE "titulo" PARA CONSISTENCIA
                     String tituloTarea = (titulo != null && !titulo.isEmpty()) ? titulo : nombre;
                     
                     if (tituloTarea == null || tituloTarea.isEmpty()) 
@@ -237,7 +235,7 @@ Tu trabajo es interpretar instrucciones en lenguaje natural y devolver un objeto
                     Tarea t = optTarea.get();
                     Tarea datos = objectMapper.convertValue(jsonMap.get("tarea"), Tarea.class);
                     
-                    // 🔹 VALIDAR TÍTULO DUPLICADO EN ACTUALIZACIÓN DE TAREA
+                    //VALIDAR TÍTULO DUPLICADO EN ACTUALIZACIÓN DE TAREA
                     if (datos.getTitulo() != null && !datos.getTitulo().equalsIgnoreCase(t.getTitulo())) {
                         boolean tituloExiste = tareaService.obtenerTodas().stream()
                                 .anyMatch(tarea -> tarea.getTitulo() != null && 
@@ -257,7 +255,7 @@ Tu trabajo es interpretar instrucciones en lenguaje natural y devolver un objeto
                         t.setTitulo(datos.getTitulo());
                     }
                     
-                    // 🔹 Permitir actualizar proyecto a null (tarea sin proyecto)
+                    //Permitir actualizar proyecto a null (tarea sin proyecto)
                     if (datos.getProyecto() != null && datos.getProyecto().getNombre() != null) {
                         Optional<Proyecto> pOpt = proyectoRepository.findAll().stream()
                                 .filter(pj -> pj.getNombre().equalsIgnoreCase(datos.getProyecto().getNombre()))
@@ -283,7 +281,7 @@ Tu trabajo es interpretar instrucciones en lenguaje natural y devolver un objeto
                 }
             }
 
-            // ================== ELIMINAR ==================
+            //ELIMINAR
             if ("eliminar".equalsIgnoreCase(accion)) {
                 if ("proyecto".equalsIgnoreCase(tipo)) {
                     if (nombre == null || nombre.isEmpty()) return "⚠️ Nombre del proyecto es requerido para eliminar";
@@ -297,7 +295,7 @@ Tu trabajo es interpretar instrucciones en lenguaje natural y devolver un objeto
                     }
                     return "⚠️ Proyecto no encontrado: " + nombre;
                 } else if ("tarea".equalsIgnoreCase(tipo)) {
-                    // 🔹 USAR "nombre" EN LUGAR DE "titulo" PARA CONSISTENCIA
+                    //USAR "nombre" EN LUGAR DE "titulo" PARA CONSISTENCIA
                     String tituloTarea = (titulo != null && !titulo.isEmpty()) ? titulo : nombre;
                     
                     if (tituloTarea == null || tituloTarea.isEmpty()) 
