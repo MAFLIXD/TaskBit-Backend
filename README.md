@@ -1,14 +1,12 @@
-# 🚀 AutoTask Manager – Backend
+# AutoTask Manager – Backend
 
 Backend del proyecto AutoTask Manager, desarrollado con Java + Spring Boot + MySQL.
-
-Este servicio expone APIs REST que permiten la gestión automatizada de tareas mediante procesamiento de lenguaje natural utilizando Inteligencia Artificial.
 
 ⚠️ El frontend del proyecto se encuentra en otro repositorio: Tasbik frontend
 
 ## 🧠 Descripción del Proyecto
 
-AutoTask Manager es un asistente inteligente que permite crear, actualizar y gestionar tareas mediante comandos en lenguaje natural (voz o texto).
+AutoTask Manager es un asistente inteligente que permite crear, actualizar y gestionar tareas y proyectos mediante comandos en lenguaje natural (voz o texto).
 
 El backend:
 
@@ -18,7 +16,7 @@ El backend:
 - Almacena información en base de datos MySQL.
 - Expone endpoints seguros mediante Spring Boot.
 
-## 🛠️ Tecnologías Utilizadas
+## 🛠️ Tecnologías
 
 ☕ Java 17+
 
@@ -26,20 +24,13 @@ El backend:
 
 🗄️ MySQL
 
-🤖 OpenAI API (LLM)
+🤖 OpenAI API
 
-🔐 JWT (seguridad básica, si aplica)
-
-🔄 REST APIs
-
-## 🏗️ Arquitectura Backend
-Frontend (React)  
-        ↓  
-Spring Boot REST API  
-        ↓  
-Servicio de IA (OpenAI)  
-        ↓  
-Base de Datos MySQL
+## 🏗️ Arquitectura
+- Frontend (React)    
+- Spring Boot REST API  
+- Servicio de IA (OpenAI)        ↓  
+- Base de Datos MySQL
 
 El flujo funciona así:
 
@@ -83,12 +74,6 @@ Agregar en application.properties:
 openai.api.key=TU_API_KEY_AQUI
 ```
 
-⚠️ Sin esta API Key el sistema no podrá:
-
-- Interpretar comandos en lenguaje natural
-- Procesar texto o transcripciones
-- Generar estructuras automáticas de tareas
-
 Recomendado usar variables de entorno:
 
 ```properties
@@ -100,30 +85,12 @@ Y en tu sistema:
 export OPENAI_API_KEY=tu_api_key
 ```
 
-▶️ Ejecutar el Proyecto
+## 📌 Endpoints Principales 
 
-Desde el IDE o con Maven:
-
-```bash
-mvn spring-boot:run
-```
-
-O generar el .jar:
-
-```bash
-mvn clean install
-java -jar target/autotask-manager.jar
-```
-
-## 📌 Endpoints Principales (Ejemplo)
-
-- `POST /api/tasks`
-- `GET /api/tasks`
-- `PUT /api/tasks/{id}`
-- `DELETE /api/tasks/{id}`
-- `POST /api/ai/process-command`
-
-(Los endpoints pueden variar según implementación final.)
+- `POST /api/tareas`
+- `GET /api/proyectos`
+- `PUT /api/tareas/{id}`
+- `DELETE /api/proyectos/{id}`
 
 ## 🔒 Seguridad
 
